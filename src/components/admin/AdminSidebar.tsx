@@ -2,11 +2,12 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
-import { LayoutDashboard, Newspaper, CalendarDays, Users, LogOut, ChevronRight } from "lucide-react"
+import { LayoutDashboard, Newspaper, CalendarDays, Users, LogOut, ChevronRight, ImageIcon } from "lucide-react"
 import type { Session } from "next-auth"
 
 const NAV = [
   { href: "/admin", icon: LayoutDashboard, label: "儀表板", sub: "DASHBOARD" },
+  { href: "/admin/banner", icon: ImageIcon, label: "主視覺", sub: "BANNER" },
   { href: "/admin/news", icon: Newspaper, label: "最新消息", sub: "NEWS" },
   { href: "/admin/event", icon: CalendarDays, label: "活動資訊", sub: "EVENT" },
   { href: "/admin/members", icon: Users, label: "成員管理", sub: "MEMBERS" },
@@ -18,13 +19,22 @@ export default function AdminSidebar({ session }: { session: Session }) {
   return (
     <aside
       className="fixed left-0 top-0 h-screen w-[220px] flex flex-col z-50"
-      style={{ background: "#1a0f14" }}
+      style={{
+        background: "#f2ece8",
+        borderRight: "1px solid #ede0e4",
+      }}
     >
       {/* Logo */}
-      <div className="px-6 py-6 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
-        <div className="text-white font-black text-xl tracking-tight leading-none">CWT</div>
-        <div className="text-[10px] mt-1 tracking-widest" style={{ color: "rgba(255,255,255,0.3)" }}>
-          ADMIN SYSTEM
+      <div className="px-6 py-6" style={{ borderBottom: "1px solid #ede0e4" }}>
+        <div className="font-black text-xl tracking-tight leading-none" style={{ color: "#1a0f14" }}>CWT</div>
+        <div className="text-[8px] mt-1 leading-snug" style={{ color: "#9a8590" }}>
+          台灣同人誌販售會<br />TAIWAN COMIC WORLD
+        </div>
+        <div
+          className="inline-block mt-2 text-[9px] font-semibold px-2 py-0.5 rounded-full"
+          style={{ background: "rgba(232,120,154,0.12)", color: "#e8789a" }}
+        >
+          ADMIN
         </div>
       </div>
 
@@ -36,31 +46,32 @@ export default function AdminSidebar({ session }: { session: Session }) {
             <Link
               key={href}
               href={href}
-              className="flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 relative"
               style={{
-                background: active ? "rgba(232,120,154,0.15)" : "transparent",
-                color: active ? "#e8789a" : "rgba(255,255,255,0.55)",
+                background: active ? "#1a0f14" : "transparent",
+                color: active ? "white" : "#5a4550",
               }}
+              onMouseEnter={e => { if (!active) (e.currentTarget as HTMLAnchorElement).style.background = "#e8dcd8" }}
+              onMouseLeave={e => { if (!active) (e.currentTarget as HTMLAnchorElement).style.background = "transparent" }}
             >
-              {active && (
-                <div
-                  className="absolute left-3 w-0.5 h-6 rounded-full"
-                  style={{ background: "#e8789a" }}
-                />
-              )}
-              <Icon size={16} strokeWidth={active ? 2.5 : 2} />
+              <Icon size={15} strokeWidth={active ? 2.5 : 2} />
               <div className="flex-1">
                 <div className="text-[12px] font-semibold leading-none">{label}</div>
-                <div className="text-[9px] mt-0.5 leading-none opacity-50">{sub}</div>
+                <div
+                  className="text-[9px] mt-0.5 leading-none"
+                  style={{ color: active ? "rgba(255,255,255,0.45)" : "#9a8590" }}
+                >
+                  {sub}
+                </div>
               </div>
-              {active && <ChevronRight size={12} style={{ color: "#e8789a" }} />}
+              {active && <ChevronRight size={12} style={{ color: "rgba(255,255,255,0.5)" }} />}
             </Link>
           )
         })}
       </nav>
 
       {/* User */}
-      <div className="px-4 py-4 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+      <div className="px-4 py-4" style={{ borderTop: "1px solid #ede0e4" }}>
         <div className="flex items-center gap-3 mb-3">
           <div
             className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
@@ -69,16 +80,18 @@ export default function AdminSidebar({ session }: { session: Session }) {
             {session.user?.name?.[0] ?? "?"}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-[12px] font-semibold text-white truncate">{session.user?.name}</div>
-            <div className="text-[10px] truncate" style={{ color: "rgba(255,255,255,0.35)" }}>
+            <div className="text-[12px] font-semibold truncate" style={{ color: "#1a0f14" }}>
+              {session.user?.name}
+            </div>
+            <div className="text-[10px] truncate" style={{ color: "#9a8590" }}>
               {(session.user as { role?: string })?.role === "admin" ? "管理員" : "編輯者"}
             </div>
           </div>
         </div>
         <button
           onClick={() => signOut({ callbackUrl: "/admin/login" })}
-          className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-[11px] transition-colors"
-          style={{ color: "rgba(255,255,255,0.35)" }}
+          className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-[11px] transition-colors hover:bg-[#e8dcd8]"
+          style={{ color: "#8a7a80" }}
         >
           <LogOut size={13} />
           登出

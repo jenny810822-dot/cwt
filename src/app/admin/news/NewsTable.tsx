@@ -3,7 +3,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Pencil, Trash2 } from "lucide-react"
-import type { NewsItem } from "@/generated/prisma"
+import type { NewsItem } from "@/generated/prisma/client"
 
 export default function NewsTable({ initialData }: { initialData: NewsItem[] }) {
   const router = useRouter()
@@ -21,8 +21,8 @@ export default function NewsTable({ initialData }: { initialData: NewsItem[] }) 
 
   if (items.length === 0) {
     return (
-      <div className="text-center py-16" style={{ color: "#9a8590" }}>
-        <div className="text-sm">尚無消息</div>
+      <div className="text-center py-16">
+        <div className="text-sm" style={{ color: "#9a8590" }}>尚無消息</div>
         <Link href="/admin/news/new" className="text-xs mt-2 inline-block" style={{ color: "#e8789a" }}>
           新增第一則 →
         </Link>
@@ -33,10 +33,9 @@ export default function NewsTable({ initialData }: { initialData: NewsItem[] }) 
   return (
     <table className="w-full">
       <thead>
-        <tr style={{ borderBottom: "1px solid #f0e8ec" }}>
+        <tr style={{ background: "#fdf8fa", borderBottom: "1px solid #f0e4ea" }}>
           {["日期", "標題", "標籤", "狀態", "操作"].map(h => (
-            <th key={h} className="text-left px-5 py-3 text-[11px] font-semibold tracking-wider"
-              style={{ color: "#9a8590" }}>
+            <th key={h} className="text-left px-5 py-3 text-[11px] font-semibold tracking-wider" style={{ color: "#9a8590" }}>
               {h}
             </th>
           ))}
@@ -44,25 +43,21 @@ export default function NewsTable({ initialData }: { initialData: NewsItem[] }) 
       </thead>
       <tbody>
         {items.map(item => (
-          <tr key={item.id}
-            className="transition-colors"
-            style={{ borderBottom: "1px solid #f5f0f2" }}
-            onMouseEnter={e => (e.currentTarget.style.background = "#fdf8fa")}
-            onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+          <tr
+            key={item.id}
+            className="transition-colors cursor-default hover:bg-[#fdf8fa]"
+            style={{ borderBottom: "1px solid #fdf0f4" }}
           >
             <td className="px-5 py-3.5 text-sm" style={{ color: "#8a7a80", width: 80 }}>{item.date}</td>
             <td className="px-5 py-3.5 text-sm font-medium" style={{ color: "#1a0f14" }}>{item.title}</td>
             <td className="px-5 py-3.5" style={{ width: 80 }}>
               {item.tag && (
-                <span
-                  className="text-[9px] text-white px-2 py-0.5 rounded font-bold"
-                  style={{ background: item.tagColor ?? "#e8789a" }}
-                >
+                <span className="text-[9px] text-white px-2 py-0.5 rounded font-bold" style={{ background: item.tagColor ?? "#e8789a" }}>
                   {item.tag}
                 </span>
               )}
             </td>
-            <td className="px-5 py-3.5" style={{ width: 80 }}>
+            <td className="px-5 py-3.5" style={{ width: 90 }}>
               <span
                 className="text-[10px] px-2.5 py-1 rounded-full font-medium"
                 style={{
@@ -73,19 +68,17 @@ export default function NewsTable({ initialData }: { initialData: NewsItem[] }) 
                 {item.published ? "已發布" : "草稿"}
               </span>
             </td>
-            <td className="px-5 py-3.5" style={{ width: 100 }}>
-              <div className="flex items-center gap-2">
-                <Link
-                  href={`/admin/news/${item.id}`}
-                  className="p-1.5 rounded-lg transition-colors"
-                  style={{ color: "#8a7a80" }}
-                >
+            <td className="px-5 py-3.5" style={{ width: 90 }}>
+              <div className="flex items-center gap-1">
+                <Link href={`/admin/news/${item.id}`}
+                  className="p-1.5 rounded-lg transition-colors hover:bg-pink-50"
+                  style={{ color: "#8a7a80" }}>
                   <Pencil size={14} />
                 </Link>
                 <button
                   onClick={() => handleDelete(item.id)}
                   disabled={deleting === item.id}
-                  className="p-1.5 rounded-lg transition-colors"
+                  className="p-1.5 rounded-lg transition-colors hover:bg-red-50"
                   style={{ color: deleting === item.id ? "#c0a0a8" : "#ef4444" }}
                 >
                   <Trash2 size={14} />

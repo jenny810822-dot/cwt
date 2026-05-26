@@ -17,10 +17,11 @@ export default function LoginPage() {
     const res = await signIn("credentials", {
       email, password, redirect: false,
     })
-    setLoading(false)
     if (res?.error) {
+      setLoading(false)
       setError("帳號或密碼錯誤")
     } else {
+      router.refresh()
       router.push("/admin")
     }
   }

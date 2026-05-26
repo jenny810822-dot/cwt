@@ -1,5 +1,6 @@
 "use client"
 import { motion } from "framer-motion"
+import Image from "next/image"
 import CountdownWidget from "./Countdown"
 import MusicWidget from "./MusicWidget"
 import NewsWidget from "./NewsWidget"
@@ -14,43 +15,62 @@ const PETALS = [
   { top: "75%", left: "48%", size: 5, delay: 0.6 },
 ]
 
-export default function HeroSection() {
+export default function HeroSection({ heroImage }: { heroImage?: string }) {
   return (
     <section className="relative overflow-hidden" style={{ height: "100vh", background: "#1c0f18" }}>
-      {/* Gradient overlay left */}
+
+      {/* Character image (from admin upload) */}
+      {heroImage ? (
+        <div className="absolute inset-0 flex items-end justify-center pointer-events-none">
+          <div className="relative h-full" style={{ width: "55%", right: "-5%" }}>
+            <Image
+              src={heroImage}
+              alt="主視覺角色"
+              fill
+              className="object-contain object-bottom"
+              priority
+              unoptimized
+            />
+          </div>
+        </div>
+      ) : (
+        /* CSS glow placeholder when no image */
+        <>
+          <div
+            className="absolute rounded-full"
+            style={{
+              top: "50%", left: "45%",
+              width: 480, height: 580,
+              transform: "translate(-50%, -50%)",
+              background: "rgba(232,120,154,0.13)",
+              filter: "blur(120px)",
+            }}
+          />
+          <div
+            className="absolute rounded-full"
+            style={{
+              top: "22%", left: "52%",
+              width: 240, height: 300,
+              background: "rgba(196,85,120,0.10)",
+              filter: "blur(80px)",
+            }}
+          />
+          <div
+            className="absolute rounded-full"
+            style={{
+              bottom: "8%", left: "34%",
+              width: 320, height: 200,
+              background: "rgba(245,198,216,0.07)",
+              filter: "blur(60px)",
+            }}
+          />
+        </>
+      )}
+
+      {/* Gradient overlay left — always on top of image for text legibility */}
       <div
         className="absolute inset-0"
-        style={{ background: "linear-gradient(to right, #140810 0%, rgba(28,15,24,0.7) 50%, rgba(28,15,24,0.2) 100%)" }}
-      />
-
-      {/* Character glow orbs */}
-      <div
-        className="absolute rounded-full"
-        style={{
-          top: "50%", left: "45%",
-          width: 480, height: 580,
-          transform: "translate(-50%, -50%)",
-          background: "rgba(232,120,154,0.13)",
-          filter: "blur(120px)",
-        }}
-      />
-      <div
-        className="absolute rounded-full"
-        style={{
-          top: "22%", left: "52%",
-          width: 240, height: 300,
-          background: "rgba(196,85,120,0.10)",
-          filter: "blur(80px)",
-        }}
-      />
-      <div
-        className="absolute rounded-full"
-        style={{
-          bottom: "8%", left: "34%",
-          width: 320, height: 200,
-          background: "rgba(245,198,216,0.07)",
-          filter: "blur(60px)",
-        }}
+        style={{ background: "linear-gradient(to right, #140810 0%, rgba(28,15,24,0.7) 45%, rgba(28,15,24,0.15) 100%)" }}
       />
 
       {/* CWT watermark */}
