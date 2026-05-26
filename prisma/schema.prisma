@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("editor") // "admin" | "editor"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Event {
+  id        Int      @id @default(autoincrement())
+  edition   Int
+  dateStart String
+  dateEnd   String
+  timeStart String   @default("10:30")
+  timeEnd   String   @default("16:30")
+  venue     String
+  accentColor String  @default("#e8789a")
+  updatedAt DateTime @updatedAt
+}
+
+model NewsItem {
+  id        Int      @id @default(autoincrement())
+  date      String
+  title     String
+  tag       String?
+  tagColor  String?
+  link      String?
+  published Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model QuickEntry {
+  id        Int      @id @default(autoincrement())
+  title     String
+  subtitle  String
+  link      String
+  bgColor   String   @default("#f0d8e4")
+  dark      Boolean  @default(false)
+  sortOrder Int      @default(0)
+}
+
+model SiteWidget {
+  id            Int    @id @default(autoincrement())
+  countdownDate String @default("2025-12-27T10:30:00+08:00")
+  themeSongTitle String @default("CWT 主題曲")
+}
