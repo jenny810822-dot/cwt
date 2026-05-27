@@ -2,7 +2,6 @@
 import { motion } from "framer-motion"
 import Image from "next/image"
 import CountdownWidget from "./Countdown"
-import MusicWidget from "./MusicWidget"
 import NewsWidget from "./NewsWidget"
 
 const PETALS = [
@@ -15,73 +14,77 @@ const PETALS = [
   { top: "75%", left: "48%", size: 5, delay: 0.6 },
 ]
 
-export default function HeroSection({ heroImage }: { heroImage?: string }) {
+const DOW = ["日", "一", "二", "三", "四", "五", "六"]
+
+function parseDate(iso: string) {
+  const [y, m, d] = iso.split("-").map(Number)
+  return new Date(y, m - 1, d)
+}
+
+function fmtMD(iso: string) {
+  const [, m, d] = iso.split("-")
+  return `${m}.${d}`
+}
+
+interface EventData {
+  edition: number
+  nameEn: string
+  nameSub: string
+  dateStart: string
+  dateEnd: string
+  timeStart: string
+  timeEnd: string
+  venue: string
+  accentColor: string
+  heroImage?: string | null
+}
+
+const FALLBACK: EventData = {
+  edition: 68,
+  nameEn: "CWT 68",
+  nameSub: "台北場",
+  dateStart: "2025-12-27",
+  dateEnd: "2025-12-28",
+  timeStart: "10:30",
+  timeEnd: "16:30",
+  venue: "台大綜合體育館 1F & B1",
+  accentColor: "#e8789a",
+}
+
+export default function HeroSection({ event }: { event?: EventData }) {
+  const ev = event ?? FALLBACK
+  const accent = ev.accentColor || "#e8789a"
+  const dowStart = DOW[parseDate(ev.dateStart).getDay()]
+  const dowEnd = DOW[parseDate(ev.dateEnd).getDay()]
+
   return (
     <section className="relative overflow-hidden" style={{ height: "100vh", background: "#1c0f18" }}>
 
-      {/* Character image (from admin upload) */}
-      {heroImage ? (
-        <div className="absolute inset-0 flex items-end justify-center pointer-events-none">
-          <div className="relative h-full" style={{ width: "55%", right: "-5%" }}>
-            <Image
-              src={heroImage}
-              alt="主視覺角色"
-              fill
-              className="object-contain object-bottom"
-              priority
-              unoptimized
-            />
-          </div>
+      {/* Full-bleed hero image */}
+      {ev.heroImage ? (
+        <div className="absolute inset-0 pointer-events-none">
+          <Image
+            src={ev.heroImage}
+            alt="主視覺"
+            fill
+            className="object-cover object-center"
+            priority
+            unoptimized
+          />
         </div>
       ) : (
-        /* CSS glow placeholder when no image */
         <>
-          <div
-            className="absolute rounded-full"
-            style={{
-              top: "50%", left: "45%",
-              width: 480, height: 580,
-              transform: "translate(-50%, -50%)",
-              background: "rgba(232,120,154,0.13)",
-              filter: "blur(120px)",
-            }}
-          />
-          <div
-            className="absolute rounded-full"
-            style={{
-              top: "22%", left: "52%",
-              width: 240, height: 300,
-              background: "rgba(196,85,120,0.10)",
-              filter: "blur(80px)",
-            }}
-          />
-          <div
-            className="absolute rounded-full"
-            style={{
-              bottom: "8%", left: "34%",
-              width: 320, height: 200,
-              background: "rgba(245,198,216,0.07)",
-              filter: "blur(60px)",
-            }}
-          />
+          <div className="absolute rounded-full" style={{ top: "50%", left: "45%", width: 480, height: 580, transform: "translate(-50%, -50%)", background: "rgba(232,120,154,0.13)", filter: "blur(120px)" }} />
+          <div className="absolute rounded-full" style={{ top: "22%", left: "52%", width: 240, height: 300, background: "rgba(196,85,120,0.10)", filter: "blur(80px)" }} />
+          <div className="absolute rounded-full" style={{ bottom: "8%", left: "34%", width: 320, height: 200, background: "rgba(245,198,216,0.07)", filter: "blur(60px)" }} />
         </>
       )}
 
-      {/* Gradient overlay left — always on top of image for text legibility */}
+      {/* Gradient overlay — dark on left for text legibility, transparent on right */}
       <div
         className="absolute inset-0"
-        style={{ background: "linear-gradient(to right, #140810 0%, rgba(28,15,24,0.7) 45%, rgba(28,15,24,0.15) 100%)" }}
+        style={{ background: "linear-gradient(to right, #140810 0%, rgba(20,8,16,0.88) 22%, rgba(20,8,16,0.4) 45%, rgba(20,8,16,0.05) 70%, transparent 100%)" }}
       />
-
-      {/* CWT watermark */}
-      <div
-        className="absolute bottom-16 pointer-events-none select-none"
-        style={{ left: "14%" }}
-      >
-        <div className="font-black leading-none" style={{ fontSize: 160, color: "rgba(255,255,255,0.035)" }}>CWT</div>
-        <div className="font-black leading-none -mt-6" style={{ fontSize: 90, color: "rgba(255,255,255,0.045)" }}>68th</div>
-        <div className="tracking-[0.5em] mt-2" style={{ fontSize: 14, color: "rgba(255,255,255,0.035)" }}>台灣同人誌販售會</div>
-      </div>
 
       {/* Floating petals */}
       {PETALS.map(({ top, left, size, delay }, i) => (
@@ -100,12 +103,6 @@ export default function HeroSection({ heroImage }: { heroImage?: string }) {
         <span className="text-[11px] tracking-widest font-medium hover:text-white transition-colors cursor-pointer">MENU</span>
         <button className="text-xl hover:text-white transition-colors">≡</button>
       </div>
-      <div
-        className="absolute top-6 z-20 text-[10px] tracking-widest"
-        style={{ right: "9rem", color: "rgba(255,255,255,0.25)" }}
-      >
-        CW68
-      </div>
 
       {/* Main content */}
       <div className="relative z-10 h-full flex">
@@ -114,45 +111,48 @@ export default function HeroSection({ heroImage }: { heroImage?: string }) {
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
           >
-            <div className="text-[11px] tracking-[0.3em] mb-8 font-medium" style={{ color: "#e8789a" }}>
-              ★ 2025
+            <div className="mb-2">
+              <div className="text-3xl font-black tracking-tight leading-tight" style={{ color: accent }}>
+                {ev.nameEn || `CWT ${ev.edition}`}
+              </div>
+              {ev.nameSub && (
+                <div className="text-lg font-semibold mt-1 mb-6" style={{ color: "rgba(255,255,255,0.75)" }}>
+                  {ev.nameSub}
+                </div>
+              )}
             </div>
 
             <div className="mb-2 flex items-baseline gap-3">
-              <span className="font-black leading-none tracking-tight" style={{ fontSize: 68, color: "#e8789a" }}>
-                12.27
+              <span className="font-black leading-none tracking-tight" style={{ fontSize: 68, color: accent }}>
+                {fmtMD(ev.dateStart)}
               </span>
-              <span className="text-xl" style={{ color: "rgba(255,255,255,0.6)" }}>（六）</span>
+              <span className="text-xl" style={{ color: "rgba(255,255,255,0.6)" }}>（{dowStart}）</span>
             </div>
             <div className="mb-8 flex items-baseline gap-3">
-              <span className="font-black leading-none tracking-tight" style={{ fontSize: 68, color: "#e8789a" }}>
-                12.28
+              <span className="font-black leading-none tracking-tight" style={{ fontSize: 68, color: accent }}>
+                {fmtMD(ev.dateEnd)}
               </span>
-              <span className="text-xl" style={{ color: "rgba(255,255,255,0.6)" }}>（日）</span>
+              <span className="text-xl" style={{ color: "rgba(255,255,255,0.6)" }}>（{dowEnd}）</span>
             </div>
 
             <div className="flex items-center gap-2 text-sm mb-2" style={{ color: "rgba(255,255,255,0.5)" }}>
-              10:30 — 16:30
+              {ev.timeStart} — {ev.timeEnd}
             </div>
             <div className="flex items-center gap-1.5 text-sm mb-10" style={{ color: "rgba(255,255,255,0.4)" }}>
               <span>📍</span>
-              <span>台大綜合體育館 1F & B1</span>
+              <span>{ev.venue}</span>
             </div>
 
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
               className="px-7 py-3.5 rounded-full text-sm font-medium flex items-center gap-2 w-fit transition-colors duration-300"
-              style={{
-                background: "#1a0f14",
-                border: "1px solid rgba(255,255,255,0.12)",
-                color: "white",
-              }}
+              style={{ background: "#1a0f14", border: "1px solid rgba(255,255,255,0.12)", color: "white" }}
               onMouseEnter={e => {
-                (e.currentTarget as HTMLButtonElement).style.background = "#e8789a"
-                ;(e.currentTarget as HTMLButtonElement).style.borderColor = "#e8789a"
+                (e.currentTarget as HTMLButtonElement).style.background = accent
+                ;(e.currentTarget as HTMLButtonElement).style.borderColor = accent
               }}
               onMouseLeave={e => {
                 (e.currentTarget as HTMLButtonElement).style.background = "#1a0f14"
@@ -173,7 +173,7 @@ export default function HeroSection({ heroImage }: { heroImage?: string }) {
                   key={s}
                   className="text-[11px] font-medium tracking-wider transition-colors duration-200"
                   style={{ color: "rgba(255,255,255,0.3)" }}
-                  onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.color = "#e8789a")}
+                  onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.color = accent)}
                   onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.3)")}
                 >
                   {s}
@@ -185,8 +185,7 @@ export default function HeroSection({ heroImage }: { heroImage?: string }) {
 
         {/* Right: Widget column */}
         <div className="w-[360px] flex flex-col gap-3 pt-16 pb-8 pr-6 overflow-y-auto">
-          <CountdownWidget />
-          <MusicWidget />
+          <CountdownWidget target={ev.dateStart && ev.timeStart ? `${ev.dateStart}T${ev.timeStart}:00+08:00` : undefined} />
           <NewsWidget />
         </div>
       </div>

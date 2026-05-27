@@ -50,15 +50,21 @@ export default function BannerPage() {
   async function handleSave() {
     if (!pendingUrl) return
     setSaving(true)
-    await fetch("/api/admin/event", {
+    setError("")
+    const res = await fetch("/api/admin/event", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id: eventId, heroImage: pendingUrl }),
     })
+    setSaving(false)
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}))
+      setError(data.error ?? `儲存失敗（${res.status}）`)
+      return
+    }
     setCurrentImage(pendingUrl)
     setPendingUrl(null)
     setPreview(null)
-    setSaving(false)
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }

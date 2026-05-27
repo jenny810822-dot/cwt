@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic"
+
 import NavRail from "@/components/NavRail"
 import HeroSection from "@/components/HeroSection"
 import QuickEntry from "@/components/QuickEntry"
@@ -9,7 +11,7 @@ export default async function Home() {
     <div className="flex min-h-screen bg-[#140810]">
       <NavRail />
       <main className="flex-1 ml-[140px]">
-        <HeroSection heroImage={event?.heroImage ?? undefined} />
+        <HeroSection event={event ?? undefined} />
         <QuickEntry />
       </main>
     </div>

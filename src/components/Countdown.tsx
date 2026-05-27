@@ -2,14 +2,13 @@
 import { useState, useEffect } from "react"
 import Widget from "./Widget"
 
-const TARGET = new Date("2025-12-27T10:30:00+08:00").getTime()
-
-export default function CountdownWidget() {
+export default function CountdownWidget({ target }: { target?: string }) {
   const [t, setT] = useState({ d: 0, h: 0, m: 0, s: 0 })
 
   useEffect(() => {
+    const ms = target ? new Date(target).getTime() : new Date("2025-12-27T10:30:00+08:00").getTime()
     const tick = () => {
-      const diff = Math.max(0, TARGET - Date.now())
+      const diff = Math.max(0, ms - Date.now())
       setT({
         d: Math.floor(diff / 86400000),
         h: Math.floor((diff % 86400000) / 3600000),
@@ -20,7 +19,7 @@ export default function CountdownWidget() {
     tick()
     const id = setInterval(tick, 1000)
     return () => clearInterval(id)
-  }, [])
+  }, [target])
 
   const pad = (n: number) => String(n).padStart(2, "0")
   const units = [

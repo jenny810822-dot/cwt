@@ -6,22 +6,19 @@ import { prisma } from "@/lib/prisma"
 export async function GET() {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  const event = await prisma.event.findFirst({ orderBy: { id: "desc" } })
-  return NextResponse.json(event)
+  const entries = await prisma.quickEntry.findMany({ orderBy: { sortOrder: "asc" } })
+  return NextResponse.json(entries)
 }
 
 export async function PUT(req: Request) {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  const body = await req.json()
-  const { id, nameEn, nameSub, dateStart, dateEnd, timeStart, timeEnd, venue, accentColor, heroImage } = body
+  const { id, image } = await req.json()
   try {
-    const data: Record<string, unknown> = { nameEn, nameSub, dateStart, dateEnd, timeStart, timeEnd, venue, accentColor }
-    if (heroImage !== undefined) data.heroImage = heroImage
-    const event = await prisma.event.update({ where: { id: id ?? 1 }, data })
-    return NextResponse.json(event)
+    const entry = await prisma.quickEntry.update({ where: { id }, data: { image } })
+    return NextResponse.json(entry)
   } catch (e) {
-    console.error("[event PUT]", e)
+    console.error("[quickentry PUT]", e)
     return NextResponse.json({ error: String(e) }, { status: 500 })
   }
 }

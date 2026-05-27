@@ -20,6 +20,8 @@ model User {
 model Event {
   id          Int      @id @default(autoincrement())
   edition     Int
+  nameEn      String   @default("")
+  nameSub     String   @default("")
   dateStart   String
   dateEnd     String
   timeStart   String   @default("10:30")
@@ -50,6 +52,7 @@ model QuickEntry {
   link      String
   bgColor   String   @default("#f0d8e4")
   dark      Boolean  @default(false)
+  image     String?
   sortOrder Int      @default(0)
 }
 
