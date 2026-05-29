@@ -1,10 +1,11 @@
 "use client"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, CalendarDays, Users, Ticket, BookOpen, HelpCircle } from "lucide-react"
+import { Home, CalendarDays, Users, Ticket, BookOpen, HelpCircle, Newspaper } from "lucide-react"
 
 const NAV = [
   { href: "/", icon: Home, label: "首頁", sub: "HOME" },
+  { href: "/news", icon: Newspaper, label: "最新消息", sub: "NEWS" },
   { href: "/event", icon: CalendarDays, label: "活動資訊", sub: "EVENT" },
   { href: "/circle", icon: Users, label: "社團報名", sub: "CIRCLE" },
   { href: "/attend", icon: Ticket, label: "一般參加", sub: "ATTEND" },
