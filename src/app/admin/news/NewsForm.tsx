@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { Upload, X } from "lucide-react"
 import type { NewsItem } from "@/generated/prisma/client"
+import RichEditor from "@/components/admin/RichEditor"
 
 const TAG_COLORS = [
   { label: "粉紅", value: "#e8789a" },
@@ -142,17 +143,8 @@ export default function NewsForm({ initialData }: { initialData?: NewsItem }) {
         </Field>
 
         {/* Body */}
-        <Field label="文章內容" hint="段落間空一行，【標題】開頭自動加粗顯示">
-          <textarea
-            value={form.body}
-            onChange={e => set("body", e.target.value)}
-            placeholder={"在這裡撰寫文章正文…\n\n【段落標題】\n段落內容…"}
-            rows={12}
-            className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all resize-y font-mono"
-            style={{ background: "#fdf8fa", border: "1.5px solid #f0e4ea", color: "#1a0f14", lineHeight: 1.7 }}
-            onFocus={e => (e.target.style.borderColor = "#e8789a")}
-            onBlur={e => (e.target.style.borderColor = "#f0e4ea")}
-          />
+        <Field label="文章內容" hint="支援標題、粗體、圖片、清單、連結等格式">
+          <RichEditor value={form.body} onChange={v => set("body", v)} />
         </Field>
 
         <Field label="外部連結（可選）" hint="填入後點擊標題跳到外部，留空則顯示文章頁">

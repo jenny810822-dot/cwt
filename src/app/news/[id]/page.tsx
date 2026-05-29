@@ -12,9 +12,7 @@ export default async function NewsArticlePage({ params }: { params: Promise<{ id
   const item = await prisma.newsItem.findUnique({ where: { id: Number(id) } })
   if (!item || !item.published) notFound()
 
-  const paragraphs = item.body
-    ? item.body.split("\n\n").filter(Boolean)
-    : []
+  const isHtml = item.body?.trimStart().startsWith("<")
 
   return (
     <div className="flex min-h-screen" style={{ background: "#fdf6f9" }}>
@@ -67,49 +65,29 @@ export default async function NewsArticlePage({ params }: { params: Promise<{ id
             </div>
           )}
 
-          {/* Body */}
-          {paragraphs.length > 0 ? (
-            <div className="flex flex-col gap-5">
-              {paragraphs.map((para, i) => {
-                const isHeading = para.startsWith("【") && para.includes("】")
-                if (isHeading && !para.includes("\n")) {
-                  return (
-                    <h2 key={i} className="text-sm font-black pt-2" style={{ color: "#1a0f14" }}>
-                      {para}
-                    </h2>
-                  )
-                }
-                return (
-                  <div key={i} className="flex flex-col gap-1.5">
-                    {para.split("\n").map((line, j) => {
-                      if (!line.trim()) return null
-                      const isBullet = line.startsWith("・") || line.startsWith("✔") || line.startsWith("•")
-                      return (
-                        <p
-                          key={j}
-                          className="text-sm leading-relaxed"
-                          style={{
-                            color: isBullet ? "#5a4550" : "#3a2a30",
-                            paddingLeft: isBullet ? "0.5rem" : undefined,
-                          }}
-                        >
-                          {line}
-                        </p>
-                      )
-                    })}
-                  </div>
-                )
-              })}
-            </div>
+          {/* Body — HTML from rich editor, or plain text fallback */}
+          {item.body ? (
+            isHtml ? (
+              <div
+                className="article-prose"
+                dangerouslySetInnerHTML={{ __html: item.body }}
+              />
+            ) : (
+              <div className="article-prose">
+                {item.body.split("\n\n").filter(Boolean).map((para, i) => (
+                  <p key={i}>{para}</p>
+                ))}
+              </div>
+            )
           ) : (
-            <p className="text-sm leading-relaxed" style={{ color: "#8a7a80" }}>（本文尚無內容）</p>
+            <p className="text-sm" style={{ color: "#8a7a80" }}>（本文尚無內容）</p>
           )}
 
           {/* Back link */}
           <div className="mt-12 pt-6" style={{ borderTop: "1px solid #f0e4ea" }}>
             <Link
               href="/news"
-              className="inline-flex items-center gap-2 text-xs font-medium transition-colors hover:opacity-80"
+              className="inline-flex items-center gap-2 text-xs font-medium hover:opacity-80"
               style={{ color: "#e8789a" }}
             >
               <ArrowLeft size={12} />
