@@ -3,7 +3,7 @@ import Image from "next/image"
 import Link from "next/link"
 
 export default async function QuickEntry() {
-  const entries = await prisma.quickEntry.findMany({ orderBy: { sortOrder: "asc" } })
+  const entries = await prisma?.quickEntry.findMany({ orderBy: { sortOrder: "asc" } }).catch(() => null) ?? []
 
   return (
     <section className="px-8 py-10" style={{ background: "#f8f0f4" }}>

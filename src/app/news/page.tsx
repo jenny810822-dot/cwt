@@ -6,10 +6,10 @@ import { ChevronRight } from "lucide-react"
 export const dynamic = "force-dynamic"
 
 export default async function NewsPage() {
-  const news = await prisma.newsItem.findMany({
+  const news = await prisma?.newsItem.findMany({
     where: { published: true },
     orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
-  })
+  }).catch(() => null) ?? []
 
   return (
     <PageShell titleEn="NEWS" title="最新消息" subtitle="活動公告、重要通知與最新資訊">

@@ -6,7 +6,7 @@ import QuickEntry from "@/components/QuickEntry"
 import { prisma } from "@/lib/prisma"
 
 export default async function Home() {
-  const event = await prisma.event.findFirst({ orderBy: { id: "desc" } })
+  const event = await prisma?.event.findFirst({ orderBy: { id: "desc" } }).catch(() => null)
   return (
     <div className="flex min-h-screen bg-[#140810]">
       <NavRail />

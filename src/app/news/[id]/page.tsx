@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic"
 
 export default async function NewsArticlePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const item = await prisma.newsItem.findUnique({ where: { id: Number(id) } })
+  const item = await prisma?.newsItem.findUnique({ where: { id: Number(id) } }).catch(() => null)
   if (!item || !item.published) notFound()
 
   const isHtml = item.body?.trimStart().startsWith("<")
