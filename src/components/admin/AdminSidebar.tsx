@@ -2,7 +2,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
-import { LayoutDashboard, Newspaper, CalendarDays, Users, LogOut, ChevronRight, ImageIcon, LayoutGrid } from "lucide-react"
+import { LayoutDashboard, Newspaper, CalendarDays, Users, LogOut, ChevronRight, ImageIcon, LayoutGrid, ClipboardList } from "lucide-react"
 import type { Session } from "next-auth"
 
 const NAV = [
@@ -10,6 +10,7 @@ const NAV = [
   { href: "/admin/banner", icon: ImageIcon, label: "主視覺", sub: "BANNER" },
   { href: "/admin/quickentry", icon: LayoutGrid, label: "快速入口", sub: "QUICK ENTRY" },
   { href: "/admin/news", icon: Newspaper, label: "最新消息", sub: "NEWS" },
+  { href: "/admin/circle", icon: ClipboardList, label: "社團報名", sub: "CIRCLE" },
   { href: "/admin/event", icon: CalendarDays, label: "活動資訊", sub: "EVENT" },
   { href: "/admin/members", icon: Users, label: "成員管理", sub: "MEMBERS" },
 ]

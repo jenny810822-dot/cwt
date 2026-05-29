@@ -63,3 +63,24 @@ model SiteWidget {
   countdownDate String @default("2025-12-27T10:30:00+08:00")
   themeSongTitle String @default("CWT 主題曲")
 }
+
+model CircleApplication {
+  id             Int      @id @default(autoincrement())
+  title          String
+  edition        Int
+  location       String   @default("台北")
+  venue          String   @default("")
+  eventDateStart String
+  eventDateEnd   String
+  regOpen        String   @default("")
+  regClose       String   @default("")
+  status         String   @default("upcoming")
+  priceHalf      Int?
+  priceFull      Int?
+  priceLarge     Int?
+  description    String   @default("")
+  published      Boolean  @default(true)
+  sortOrder      Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
