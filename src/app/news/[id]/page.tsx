@@ -50,7 +50,7 @@ export default async function NewsArticlePage({ params }: { params: Promise<{ id
         </div>
 
         {/* Article body */}
-        <div className="px-10 py-10 max-w-2xl">
+        <div className="px-10 py-10 w-full">
 
           {/* Cover image */}
           {item.coverImage && (

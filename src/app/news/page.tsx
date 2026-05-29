@@ -14,7 +14,7 @@ export default async function NewsPage() {
   return (
     <PageShell titleEn="NEWS" title="最新消息" subtitle="活動公告、重要通知與最新資訊">
       <div className="max-w-2xl flex flex-col gap-3">
-        {news.map(({ id, date, title, tag, tagColor, body }) => (
+        {news.map(({ id, date, title, tag, tagColor }) => (
           <Link
             key={id}
             href={`/news/${id}`}
@@ -36,11 +36,6 @@ export default async function NewsPage() {
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <h3 className="text-sm font-bold mb-1.5 leading-snug" style={{ color: "#1a0f14" }}>{title}</h3>
-                  {body && (
-                    <p className="text-xs leading-relaxed line-clamp-2" style={{ color: "#6a5a60" }}>
-                      {body.replace(/\n/g, " ")}
-                    </p>
-                  )}
                 </div>
                 <ChevronRight
                   size={15}
