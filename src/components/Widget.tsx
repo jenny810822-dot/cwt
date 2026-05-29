@@ -16,7 +16,7 @@ export default function Widget({ title, subtitle, action, delay = 0, children }:
       className="widget p-4"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.5, delay }}
     >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-baseline gap-1.5">

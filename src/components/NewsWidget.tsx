@@ -1,20 +1,34 @@
+"use client"
+import { useEffect, useState } from "react"
+import Link from "next/link"
 import Widget from "./Widget"
 
-const NEWS = [
-  { date: "05.20", title: "【CW68】社團報名資訊公告", tag: "重要", tagBg: "#e8789a" },
-  { date: "05.18", title: "【CW68】活動主視覺公開！", tag: "NEW", tagBg: "#c45578" },
-  { date: "05.10", title: "【場地資訊】台大綜合體育館交通指南", tag: null, tagBg: "" },
-  { date: "05.02", title: "【新手指南】第一次參加CWT就看這裡！", tag: null, tagBg: "" },
-]
+type NewsItem = {
+  id: number
+  date: string
+  title: string
+  tag: string | null
+  tagColor: string | null
+}
 
 export default function NewsWidget() {
+  const [items, setItems] = useState<NewsItem[]>([])
+
+  useEffect(() => {
+    fetch("/api/news")
+      .then(r => r.json())
+      .then(data => setItems((data as NewsItem[]).slice(0, 4)))
+      .catch(() => {})
+  }, [])
+
   return (
     <Widget title="最新消息" subtitle="NEWS" action={{ label: "MORE", href: "/news" }} delay={0.2}>
       <div className="flex flex-col">
-        {NEWS.map(({ date, title, tag, tagBg }) => (
-          <div
-            key={title}
-            className="flex items-center gap-2 py-2 cursor-pointer group"
+        {items.map(({ id, date, title, tag, tagColor }) => (
+          <Link
+            key={id}
+            href={`/news/${id}`}
+            className="flex items-center gap-2 py-2 group"
             style={{ borderBottom: "1px solid #f0e8ec" }}
           >
             <span className="text-[10px] w-9 flex-shrink-0" style={{ color: "#b0a0a8" }}>{date}</span>
@@ -27,14 +41,17 @@ export default function NewsWidget() {
             {tag && (
               <span
                 className="text-[8px] text-white px-1.5 py-0.5 rounded font-bold flex-shrink-0"
-                style={{ background: tagBg }}
+                style={{ background: tagColor ?? "#e8789a" }}
               >
                 {tag}
               </span>
             )}
             <span className="text-sm flex-shrink-0" style={{ color: "#c0b0b8" }}>›</span>
-          </div>
+          </Link>
         ))}
+        {items.length === 0 && (
+          <div className="py-4 text-center text-[11px]" style={{ color: "#b0a0a8" }}>暫無消息</div>
+        )}
       </div>
     </Widget>
   )

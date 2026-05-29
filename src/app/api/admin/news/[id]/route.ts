@@ -7,8 +7,12 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   const { id } = await params
-  const data = await req.json()
-  const item = await prisma.newsItem.update({ where: { id: Number(id) }, data })
+  const raw = await req.json()
+  const { date, title, tag, tagColor, body, coverImage, link, published, sortOrder } = raw
+  const item = await prisma.newsItem.update({
+    where: { id: Number(id) },
+    data: { date, title, tag, tagColor, body, coverImage, link, published, sortOrder },
+  })
   return NextResponse.json(item)
 }
 
