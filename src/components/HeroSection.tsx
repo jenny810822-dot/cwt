@@ -1,6 +1,7 @@
 "use client"
 import { motion } from "framer-motion"
 import Image from "next/image"
+import Link from "next/link"
 import CountdownWidget from "./Countdown"
 import NewsWidget from "./NewsWidget"
 
@@ -145,22 +146,24 @@ export default function HeroSection({ event }: { event?: EventData }) {
               <span>{ev.venue}</span>
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              className="px-7 py-3.5 rounded-full text-sm font-medium flex items-center gap-2 w-fit transition-colors duration-300"
-              style={{ background: "#1a0f14", border: "1px solid rgba(255,255,255,0.12)", color: "white" }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLButtonElement).style.background = accent
-                ;(e.currentTarget as HTMLButtonElement).style.borderColor = accent
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLButtonElement).style.background = "#1a0f14"
-                ;(e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.12)"
-              }}
-            >
-              活動資訊 VIEW MORE →
-            </motion.button>
+            <Link href="/event">
+              <motion.button
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="px-7 py-3.5 rounded-full text-sm font-medium flex items-center gap-2 w-fit transition-colors duration-300"
+                style={{ background: "#1a0f14", border: "1px solid rgba(255,255,255,0.12)", color: "white" }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLButtonElement).style.background = accent
+                  ;(e.currentTarget as HTMLButtonElement).style.borderColor = accent
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLButtonElement).style.background = "#1a0f14"
+                  ;(e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.12)"
+                }}
+              >
+                活動資訊 VIEW MORE →
+              </motion.button>
+            </Link>
           </motion.div>
 
           <div className="mt-12">
