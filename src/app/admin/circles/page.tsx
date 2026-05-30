@@ -12,7 +12,11 @@ const STATUS_META: Record<string, { label: string; color: string }> = {
   pending:  { label: "待審核", color: "#a78bfa" },
   approved: { label: "已通過", color: "#10b981" },
   rejected: { label: "已拒絕", color: "#9a8590" },
+  // 退回用
+  revert:   { label: "退回待審核", color: "#8a7a80" },
 }
+
+type PendingAction = { id: number; name: string; status: string }
 
 export default function AdminCirclesPage() {
   const [circles, setCircles] = useState<Circle[]>([])
@@ -21,6 +25,8 @@ export default function AdminCirclesPage() {
   const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("pending")
   const [resending, setResending] = useState<number | null>(null)
   const [resendResult, setResendResult] = useState<Record<number, "ok" | "err">>({})
+  const [pendingAction, setPendingAction] = useState<PendingAction | null>(null)
+  const [updating, setUpdating] = useState(false)
 
   async function resendMail(id: number) {
     setResending(id)
@@ -37,13 +43,18 @@ export default function AdminCirclesPage() {
     })
   }, [])
 
-  async function setStatus(id: number, status: string) {
-    const res = await fetch(`/api/admin/circles/${id}`, {
-      method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status }),
+  async function confirmAction() {
+    if (!pendingAction) return
+    setUpdating(true)
+    const res = await fetch(`/api/admin/circles/${pendingAction.id}`, {
+      method: "PUT", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: pendingAction.status }),
     })
     if (res.ok) {
-      setCircles(prev => prev.map(c => c.id === id ? { ...c, status } : c))
+      setCircles(prev => prev.map(c => c.id === pendingAction.id ? { ...c, status: pendingAction.status } : c))
     }
+    setUpdating(false)
+    setPendingAction(null)
   }
 
   const filtered = filter === "all" ? circles : circles.filter(c => c.status === filter)
@@ -113,17 +124,24 @@ export default function AdminCirclesPage() {
                   {/* Actions */}
                   <div className="flex items-center gap-2 flex-shrink-0">
                     {c.status !== "approved" && (
-                      <button onClick={() => setStatus(c.id, "approved")}
+                      <button onClick={() => setPendingAction({ id: c.id, name: c.name, status: "approved" })}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
                         style={{ background: "rgba(16,185,129,0.1)", color: "#10b981" }}>
                         <CheckCircle size={12} /> 通過
                       </button>
                     )}
                     {c.status !== "rejected" && (
-                      <button onClick={() => setStatus(c.id, "rejected")}
+                      <button onClick={() => setPendingAction({ id: c.id, name: c.name, status: "rejected" })}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
                         style={{ background: "rgba(156,163,175,0.1)", color: "#6b7280" }}>
                         <XCircle size={12} /> 拒絕
+                      </button>
+                    )}
+                    {c.status !== "pending" && (
+                      <button onClick={() => setPendingAction({ id: c.id, name: c.name, status: "pending" })}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+                        style={{ background: "#f0e8ec", color: "#8a7a80" }}>
+                        ↩ 退回
                       </button>
                     )}
                     <button onClick={() => setExpanded(isOpen ? null : c.id)}
@@ -191,6 +209,36 @@ export default function AdminCirclesPage() {
               </div>
             )
           })}
+        </div>
+      )}
+
+      {/* Confirmation modal */}
+      {pendingAction && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ background: "rgba(20,8,16,0.5)" }}
+          onClick={e => { if (e.target === e.currentTarget && !updating) setPendingAction(null) }}>
+          <div className="rounded-2xl p-7 w-full max-w-sm mx-4 shadow-2xl" style={{ background: "white" }}>
+            <h3 className="text-base font-black mb-2" style={{ color: "#1a0f14" }}>確認操作</h3>
+            <p className="text-sm mb-1" style={{ color: "#5a4550" }}>
+              確定要將 <strong>{pendingAction.name}</strong> 改為
+            </p>
+            <p className="text-lg font-black mb-5"
+              style={{ color: STATUS_META[pendingAction.status]?.color ?? "#1a0f14" }}>
+              {STATUS_META[pendingAction.status]?.label ?? pendingAction.status}
+            </p>
+            <div className="flex gap-3">
+              <button onClick={confirmAction} disabled={updating}
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white"
+                style={{ background: updating ? "rgba(232,120,154,0.4)" : "#e8789a" }}>
+                {updating ? "處理中…" : "確認"}
+              </button>
+              <button onClick={() => setPendingAction(null)} disabled={updating}
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold"
+                style={{ background: "#f0e8ec", color: "#5a4550" }}>
+                取消
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
