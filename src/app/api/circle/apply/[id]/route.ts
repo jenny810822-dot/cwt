@@ -13,6 +13,6 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   if (app.circleId !== session.id) return NextResponse.json({ error: "無權操作" }, { status: 403 })
   if (app.status !== "pending") return NextResponse.json({ error: "僅可取消審核中的報名" }, { status: 400 })
 
-  await prisma.circleEventApplication.delete({ where: { id: Number(id) } })
+  await prisma.circleEventApplication.update({ where: { id: Number(id) }, data: { status: "cancelled" } })
   return NextResponse.json({ ok: true })
 }

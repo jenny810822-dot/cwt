@@ -50,7 +50,10 @@ export default function CircleDashboard() {
         fetch("/api/circle/apply"),
         fetch("/api/circle"),
       ])
-      if (appsRes.ok) setApplications(await appsRes.json())
+      if (appsRes.ok) {
+        const all = await appsRes.json()
+        setApplications(all.filter((a: { status: string }) => a.status !== "cancelled"))
+      }
       if (eventsRes.ok) {
         const events = await eventsRes.json()
         setOpenEvents(events.filter((e: { status: string }) => e.status === "open"))

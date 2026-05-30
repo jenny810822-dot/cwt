@@ -30,10 +30,11 @@ type PendingAction = {
 const TABLE_LABELS: Record<string, string> = { half: "半桌", full: "全桌", large: "大桌" }
 
 const STATUS_META: Record<string, { label: string; color: string }> = {
-  pending:  { label: "審核中", color: "#a78bfa" },
-  approved: { label: "錄取",   color: "#10b981" },
-  rejected: { label: "未錄取", color: "#9a8590" },
-  paid:     { label: "已繳費", color: "#e8789a" },
+  pending:   { label: "審核中", color: "#a78bfa" },
+  approved:  { label: "錄取",   color: "#10b981" },
+  rejected:  { label: "未錄取", color: "#9a8590" },
+  paid:      { label: "已繳費", color: "#e8789a" },
+  cancelled: { label: "已取消", color: "#d1a0b0" },
 }
 
 // what status to revert to
@@ -53,7 +54,7 @@ export default function CircleRegsPage() {
   const [event, setEvent] = useState<Event | null>(null)
   const [regs, setRegs] = useState<Reg[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected" | "paid">("all")
+  const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected" | "paid" | "cancelled">("all")
 
   // confirmation modal
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null)
@@ -102,7 +103,7 @@ export default function CircleRegsPage() {
   }
 
   const filtered = filter === "all" ? regs : regs.filter(r => r.status === filter)
-  const counts = { all: regs.length, pending: 0, approved: 0, rejected: 0, paid: 0 }
+  const counts = { all: regs.length, pending: 0, approved: 0, rejected: 0, paid: 0, cancelled: 0 }
   regs.forEach(r => { if (r.status in counts) counts[r.status as keyof typeof counts]++ })
 
   return (
@@ -125,7 +126,7 @@ export default function CircleRegsPage() {
 
       {/* Filter tabs */}
       <div className="flex gap-2 mb-5 flex-wrap">
-        {(["all", "pending", "approved", "paid", "rejected"] as const).map(f => (
+        {(["all", "pending", "approved", "paid", "rejected", "cancelled"] as const).map(f => (
           <button key={f} onClick={() => setFilter(f)}
             className="px-4 py-1.5 rounded-full text-xs font-semibold transition-all"
             style={{ background: filter === f ? "#1a0f14" : "#f0e8ec", color: filter === f ? "white" : "#5a4550" }}>
@@ -187,6 +188,10 @@ export default function CircleRegsPage() {
                   {/* Actions */}
                   <div className="flex flex-col gap-2 flex-shrink-0 items-end">
                     <div className="flex gap-2 flex-wrap justify-end">
+                      {reg.status === "cancelled" && (
+                        <span className="text-xs px-3 py-1.5 rounded-lg"
+                          style={{ background: "#f8f0f4", color: "#b0a0a8" }}>社團已取消</span>
+                      )}
                       {reg.status === "pending" && <>
                         <button onClick={() => requestAction(reg, "approved", "錄取")}
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold"
