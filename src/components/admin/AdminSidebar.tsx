@@ -10,7 +10,8 @@ const NAV = [
   { href: "/admin/banner", icon: ImageIcon, label: "主視覺", sub: "BANNER" },
   { href: "/admin/quickentry", icon: LayoutGrid, label: "快速入口", sub: "QUICK ENTRY" },
   { href: "/admin/news", icon: Newspaper, label: "最新消息", sub: "NEWS" },
-  { href: "/admin/circle", icon: ClipboardList, label: "社團報名", sub: "CIRCLE" },
+  { href: "/admin/circles", icon: Users, label: "社團審核", sub: "CIRCLES" },
+  { href: "/admin/circle", icon: ClipboardList, label: "報名場次", sub: "CIRCLE" },
   { href: "/admin/event", icon: CalendarDays, label: "活動資訊", sub: "EVENT" },
   { href: "/admin/members", icon: Users, label: "成員管理", sub: "MEMBERS" },
 ]
@@ -43,7 +44,7 @@ export default function AdminSidebar({ session }: { session: Session }) {
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5">
         {NAV.map(({ href, icon: Icon, label, sub }) => {
-          const active = path === href || (href !== "/admin" && path.startsWith(href))
+          const active = path === href || (href !== "/admin" && path.startsWith(href + "/"))
           return (
             <Link
               key={href}

@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
 import PageShell from "@/components/PageShell"
-import { MapPin, Clock, ChevronRight } from "lucide-react"
+import { MapPin, Clock, ChevronRight, UserCircle } from "lucide-react"
 
 export const dynamic = "force-dynamic"
 
@@ -109,6 +109,27 @@ export default async function CirclePage() {
           ))}
         </div>
       )}
+
+      {/* Login / register entry */}
+      <div className="mt-10 pt-8 max-w-3xl flex items-center justify-between"
+        style={{ borderTop: "1px solid #f0e4ea" }}>
+        <div className="flex items-center gap-3">
+          <UserCircle size={18} style={{ color: "#c0a0b0" }} />
+          <span className="text-sm" style={{ color: "#6a5a60" }}>已有社團帳號？登入後即可報名開放場次。</span>
+        </div>
+        <div className="flex gap-2">
+          <Link href="/circle/login"
+            className="px-4 py-2 rounded-xl text-xs font-semibold transition-colors"
+            style={{ background: "#f0e8ec", color: "#5a4550" }}>
+            登入
+          </Link>
+          <Link href="/circle/register"
+            className="px-4 py-2 rounded-xl text-xs font-semibold text-white"
+            style={{ background: "#e8789a" }}>
+            申請帳號
+          </Link>
+        </div>
+      </div>
     </PageShell>
   )
 }

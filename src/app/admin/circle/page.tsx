@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
-import { Plus, Pencil } from "lucide-react"
+import { Plus, Pencil, Users } from "lucide-react"
 
 export const dynamic = "force-dynamic"
 
@@ -75,11 +75,18 @@ export default async function CircleAdminPage() {
                       </span>
                     </td>
                     <td className="px-5 py-3.5">
-                      <Link href={`/admin/circle/${item.id}`}
-                        className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-colors"
-                        style={{ background: "#f8f0f4", color: "#8a7a80" }}>
-                        <Pencil size={11} /> 編輯
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        <Link href={`/admin/circle/${item.id}/regs`}
+                          className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-colors"
+                          style={{ background: "rgba(167,139,250,0.1)", color: "#7c3aed" }}>
+                          <Users size={11} /> 查看報名
+                        </Link>
+                        <Link href={`/admin/circle/${item.id}`}
+                          className="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg transition-colors"
+                          style={{ background: "#f8f0f4", color: "#8a7a80" }}>
+                          <Pencil size={11} /> 編輯
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 )
