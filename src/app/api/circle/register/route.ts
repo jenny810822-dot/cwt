@@ -2,12 +2,22 @@ import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma"
 import { resend, FROM } from "@/lib/mail"
+import { rateLimit, getIp } from "@/lib/rate-limit"
 
 function isValidUrl(s: string) {
   try { new URL(s); return true } catch { return false }
 }
 
 export async function POST(req: Request) {
+  // 3 次 / 1 小時 per IP
+  const { ok, retryAfterSec } = rateLimit(`register:${getIp(req)}`, 3, 60 * 60 * 1000)
+  if (!ok) {
+    return NextResponse.json(
+      { error: `申請次數過多，請 ${Math.ceil(retryAfterSec / 60)} 分鐘後再試` },
+      { status: 429 }
+    )
+  }
+
   const { name, leaderName, email, password, phone, type, region, genres, portfolioUrl, snsUrl, note } = await req.json()
 
   if (!name?.trim()) return NextResponse.json({ error: "請填寫社團名稱" }, { status: 400 })
