@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import NavRail from "@/components/NavRail"
-import { CheckCircle, Clock, XCircle, LogOut, ExternalLink } from "lucide-react"
+import { CheckCircle, Clock, XCircle, LogOut, ExternalLink, Trash2 } from "lucide-react"
 
 type Circle = {
   id: number; name: string; leaderName: string; email: string; phone: string
@@ -28,6 +28,16 @@ export default function CircleDashboard() {
   const [applications, setApplications] = useState<Application[]>([])
   const [openEvents, setOpenEvents] = useState<{ id: number; title: string; eventDateStart: string; eventDateEnd: string }[]>([])
   const [loading, setLoading] = useState(true)
+  const [cancelTarget, setCancelTarget] = useState<number | null>(null)
+  const [cancelling, setCancelling] = useState(false)
+
+  async function cancelApplication(id: number) {
+    setCancelling(true)
+    const res = await fetch(`/api/circle/apply/${id}`, { method: "DELETE" })
+    if (res.ok) setApplications(prev => prev.filter(a => a.id !== id))
+    setCancelling(false)
+    setCancelTarget(null)
+  }
 
   useEffect(() => {
     async function load() {
@@ -125,10 +135,19 @@ export default function CircleDashboard() {
                   return (
                     <div key={app.id} className="rounded-2xl px-6 py-4"
                       style={{ background: "white", border: "1px solid #f0e4ea" }}>
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between gap-3">
                         <p className="text-sm font-bold" style={{ color: "#1a0f14" }}>{app.event?.title ?? `場次 #${app.eventApplicationId}`}</p>
-                        <span className="text-[10px] font-bold px-2.5 py-1 rounded-full"
-                          style={{ background: `${st.color}18`, color: st.color }}>{st.label}</span>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          <span className="text-[10px] font-bold px-2.5 py-1 rounded-full"
+                            style={{ background: `${st.color}18`, color: st.color }}>{st.label}</span>
+                          {app.status === "pending" && (
+                            <button onClick={() => setCancelTarget(app.id)}
+                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-semibold"
+                              style={{ background: "rgba(156,163,175,0.1)", color: "#9a8590" }}>
+                              <Trash2 size={10} /> 取消
+                            </button>
+                          )}
+                        </div>
                       </div>
                       <p className="text-xs mt-1" style={{ color: "#9a8590" }}>
                         桌位：{TABLE_LABELS[app.tableType] ?? app.tableType} ·
@@ -171,6 +190,29 @@ export default function CircleDashboard() {
           </section>
         </div>
       </main>
+
+      {cancelTarget !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center"
+          style={{ background: "rgba(20,8,16,0.5)" }}
+          onClick={e => { if (e.target === e.currentTarget && !cancelling) setCancelTarget(null) }}>
+          <div className="rounded-2xl p-7 w-full max-w-sm mx-4 shadow-2xl" style={{ background: "white" }}>
+            <h3 className="text-base font-black mb-2" style={{ color: "#1a0f14" }}>確認取消報名</h3>
+            <p className="text-sm mb-5" style={{ color: "#5a4550" }}>取消後將無法復原，確定要撤回這筆報名嗎？</p>
+            <div className="flex gap-3">
+              <button onClick={() => cancelApplication(cancelTarget)} disabled={cancelling}
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold"
+                style={{ background: cancelling ? "#f0e8ec" : "rgba(156,163,175,0.15)", color: "#6b7280" }}>
+                {cancelling ? "取消中…" : "確認取消"}
+              </button>
+              <button onClick={() => setCancelTarget(null)} disabled={cancelling}
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white"
+                style={{ background: "#e8789a" }}>
+                保留報名
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

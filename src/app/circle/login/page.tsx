@@ -2,6 +2,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { Mail } from "lucide-react"
 import NavRail from "@/components/NavRail"
 
 export default function CircleLoginPage() {
@@ -10,8 +11,9 @@ export default function CircleLoginPage() {
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [isRejected, setIsRejected] = useState(false)
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault()
     setError("")
     setLoading(true)
@@ -21,7 +23,12 @@ export default function CircleLoginPage() {
       body: JSON.stringify({ email, password }),
     })
     const data = await res.json()
-    if (!res.ok) { setError(data.error ?? "登入失敗"); setLoading(false); return }
+    if (!res.ok) {
+      setIsRejected(res.status === 403)
+      setError(data.error ?? "登入失敗")
+      setLoading(false)
+      return
+    }
     router.push("/circle/dashboard")
     router.refresh()
   }
@@ -62,13 +69,31 @@ export default function CircleLoginPage() {
               />
             </div>
 
-            {error && <p className="text-xs font-medium" style={{ color: "#e8789a" }}>{error}</p>}
+            {error && (
+              <div className="rounded-xl px-4 py-3 text-xs leading-relaxed"
+                style={{ background: "rgba(232,120,154,0.07)", border: "1px solid rgba(232,120,154,0.2)", color: "#c0506a" }}>
+                {error}
+                {isRejected && (
+                  <a href="mailto:CWT@comicworld.com.tw"
+                    className="flex items-center gap-1 mt-2 font-semibold"
+                    style={{ color: "#e8789a" }}>
+                    <Mail size={11} /> 聯絡主辦
+                  </a>
+                )}
+              </div>
+            )}
 
             <button type="submit" disabled={loading}
               className="w-full py-3 rounded-xl text-sm font-semibold text-white transition-colors mt-1"
               style={{ background: loading ? "rgba(232,120,154,0.5)" : "#e8789a" }}>
               {loading ? "登入中…" : "登入"}
             </button>
+
+            <Link href="/circle/forgot-password"
+              className="text-center text-xs block"
+              style={{ color: "#9a8590" }}>
+              忘記密碼？
+            </Link>
           </form>
 
           <p className="text-center text-xs mt-5" style={{ color: "#9a8590" }}>
